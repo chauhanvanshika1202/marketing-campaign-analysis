@@ -1,18 +1,30 @@
+
 """Marketing Campaign Response Dashboard (Streamlit).
 Run:  streamlit run app.py
 """
-import os
-import sys
+import re
+import sqlite3
 
 import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-sys.path.insert(0, "src")
-from sql_utils import load_queries, run_query  # noqa: E402
+CLEAN_CSV = "marketing_campaign_clean.csv"
+QUERY_FILE = "queries.sql"
 
-CLEAN_CSV = "data/marketing_campaign_clean.csv"
-DB = "data/marketing.db"
+
+def load_queries(path: str = QUERY_FILE) -> dict:
+    """Parse queries.sql into {name: {'question': ..., 'sql': ...}}."""
+    text = open(path, encoding="utf-8").read()
+    queries = {}
+    for block in re.split(r"(?m)^-- name:\s*", text)[1:]:
+        name, _, rest = block.partition("\n")
+        m = re.match(r"-- question:\s*(.*)\n", rest)
+        question = m.group(1).strip() if m else ""
+        sql = rest[m.end():] if m else rest
+        queries[name.strip()] = {"question": question, "sql": sql.strip()}
+    return queries
+
 
 st.set_page_config(page_title="Marketing Campaign Analysis", page_icon="📈", layout="wide")
 
@@ -22,14 +34,14 @@ def load_data() -> pd.DataFrame:
     return pd.read_csv(CLEAN_CSV)
 
 
-def ensure_db():
-    """Build the SQLite database on first run if it is not present."""
-    if not os.path.exists(DB):
-        import build_db  # noqa: F401  (running the module creates the DB)
+def run_query(sql: str) -> pd.DataFrame:
+    """Run SQL on an in-memory SQLite database built from the clean CSV."""
+    with sqlite3.connect(":memory:") as con:
+        load_data().to_sql("customers", con, index=False)
+        return pd.read_sql_query(sql, con)
 
 
 df = load_data()
-ensure_db()
 
 DIMENSIONS = {
     "Income group": "Income_Group",
