@@ -5,13 +5,17 @@ I cleaned a real customer dataset, answered 15 business questions with **SQL**, 
 
 **Live dashboard:** _paste your Streamlit link here_
 
-![What drives response](charts/response_drivers.png)
+
+
+![What drives response](response_drivers.png)
+
+
 
 ## Dataset
 Kaggle "Customer Personality Analysis": 2,240 customers of a food and wine retailer (joined 2012-2014) with demographics, spend per product category, purchases per channel, and whether each customer accepted 6 marketing campaigns.
 `Response` = accepted the **last** campaign (14.9% of customers did).
 
-## Data cleaning (`src/clean.py`)
+## Data cleaning (`cleaning.py`)
 | Problem found | Fix |
 |---|---|
 | Join dates in two formats; spreadsheet had swapped day and month for some rows (dates ran to Dec 2014 although the data ends Jun 2014) | Parsed both formats, swapped back; range is now 2012-07-30 to 2014-06-29 |
@@ -23,7 +27,7 @@ Kaggle "Customer Personality Analysis": 2,240 customers of a food and wine retai
 
 Result: 2,240 to 2,232 rows. Added features: Age, Age_Group, Total_Spend, Total_Purchases, Children, Prev_Campaigns_Accepted, Tenure_Days, Income_Group (quartiles), Recency_Band.
 
-## Key findings (all from the SQL queries in `sql/queries.sql`)
+## Key findings (all from the SQL queries in `queries.sql`)
 1. **Past behaviour is the strongest signal.** Customers who accepted no earlier campaign responded at 8.2%; with 1 earlier acceptance, 31.2%; with 2, 50.0%; with 3 or more, about 80-90% (the 4-campaign group has only 11 customers).
 2. **Income, children and recency matter.** Top income quartile: 26.7% (other quartiles 10-12%). No children: 26.5% vs about 10% with one or two. Bought in the last 24 days: 26.5% vs 7.5% at 75-99 days.
 3. **A concrete target profile:** high income + no children + active in the last 50 days = **190 customers (8.5% of the base) with a 45.3% response rate vs 12.0% for everyone else**, and about 2.8x the average spend.
@@ -31,7 +35,11 @@ Result: 2,240 to 2,232 rows. Added features: Age, Age_Group, Total_Spend, Total_
 5. **Spend is concentrated.** The top 10% of customers make about 30% of total spend and the top 20% about 52%. Wine and meat are about 78% of all spend.
 6. Complaints made no difference to response (15.0% vs 14.9%, but only 20 complainers).
 
-![Spend concentration and target profile](charts/spend_and_target_profile.png)
+
+
+![Spend concentration and target profile](spend_and_target_profile.png)
+
+
 
 ## Recommendations
 - Build the next campaign list from customers who accepted earlier campaigns, then the high-income / no-children / recently active profile.
@@ -51,25 +59,22 @@ Python (pandas, matplotlib, Plotly), SQL (SQLite, including CTEs, window functio
 
 ## Project structure
 ```
-app.py                       Streamlit dashboard (4 tabs, filters, SQL explorer)
-sql/queries.sql              15 SQL queries, each with the business question
-src/clean.py                 Cleaning and feature engineering
-src/build_db.py              Loads clean data into SQLite (data/marketing.db)
-src/sql_utils.py             Reads queries.sql and runs them
-src/analysis.py              Runs all queries, saves results and charts
-results/query_results.md     Every query with its output
-charts/                      Charts used in this README
-data/                        Raw CSV, clean CSV, SQLite database
+app.py                          Streamlit dashboard (4 tabs, filters, SQL explorer)
+queries.sql                     15 SQL queries, each with the business question
+cleaning.py                     Cleaning and feature engineering
+marketing_campaign_clean.csv    Cleaned data used by the app
+response_drivers.png            Chart used in this README
+spend_and_target_profile.png    Chart used in this README
+requirements.txt                Python packages
 ```
 
 ## Run it yourself
 ```bash
 pip install -r requirements.txt
-python src/clean.py
-python src/build_db.py
-python src/analysis.py
+python cleaning.py        # optional: needs the original Kaggle file saved as marketing_campaign_raw.csv
 streamlit run app.py
 ```
+The app loads the clean CSV into an in-memory SQLite database and runs the queries in `queries.sql` on it.
 
 ## Deploy (free)
 1. Push this folder to a GitHub repository.
