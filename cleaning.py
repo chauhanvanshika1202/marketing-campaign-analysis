@@ -1,13 +1,13 @@
 """Clean the raw marketing campaign data and engineer features.
 
-Run:  python src/clean.py
-Input : data/marketing_campaign_raw.csv
-Output: data/marketing_campaign_clean.csv  and  a printed cleaning log
+Run:  python cleaning.py
+Input : marketing_campaign_raw.csv
+Output: marketing_campaign_clean.csv  and  a printed cleaning log
 """
 import pandas as pd
 
-RAW = "data/marketing_campaign_raw.csv"
-CLEAN = "data/marketing_campaign_clean.csv"
+RAW = "marketing_campaign_raw.csv"
+CLEAN = "marketing_campaign_clean.csv"
 REFERENCE_YEAR = 2014  # last customer joined in mid-2014, so ages are computed as of 2014
 
 SPEND_COLS = ["MntWines", "MntFruits", "MntMeatProducts", "MntFishProducts",
