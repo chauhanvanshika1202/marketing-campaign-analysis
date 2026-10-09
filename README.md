@@ -76,9 +76,5 @@ streamlit run app.py
 ```
 The app loads the clean CSV into an in-memory SQLite database and runs the queries in `queries.sql` on it.
 
-## Deploy (free)
-1. Push this folder to a GitHub repository.
-2. Go to share.streamlit.io, sign in with GitHub, choose the repo, set the main file to `app.py`, and deploy.
-3. Paste the live link at the top of this README and on your resume.
 
 _Dataset credit: Kaggle, "Customer Personality Analysis"._
