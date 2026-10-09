@@ -3,7 +3,7 @@
 **Which customers accept a marketing campaign, and who should we target next?**
 I cleaned a real customer dataset, answered 15 business questions with **SQL**, and built an interactive **Streamlit dashboard** that turns the findings into targeting recommendations.
 
-**Live dashboard:** _paste your Streamlit link here_
+**Live dashboard:** https://marketing-campaign-analysis-y8tt6bnjhiiofom7avxwbk.streamlit.app/
 
 
 
